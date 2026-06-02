@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JobHunter — Bonn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0f0a;
+    --surface: #141810;
+    --card: #1a1f16;
+    --border: #2a3024;
+    --border-bright: #3d4a35;
+    --accent: #7ec850;
+    --accent-dim: #4a7a2e;
+    --accent-glow: rgba(126,200,80,0.15);
+    --text: #d4e8c2;
+    --text-dim: #6e8560;
+    --text-muted: #3d4e35;
+    --warning: #e8b84a;
+    --danger: #e85c4a;
+    --mono: 'DM Mono', monospace;
+    --display: 'Syne', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* Header */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 32px 0 24px;
+    margin-bottom: 40px;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .logo-block { flex: 1; }
+
+  .logo {
+    font-family: var(--display);
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-dot {
+    display: inline-block;
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  .tagline {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  .location-badge {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    background: var(--accent-glow);
+    border: 1px solid var(--accent-dim);
+    color: var(--accent);
+    padding: 6px 12px;
+    border-radius: 4px;
+    letter-spacing: 0.08em;
+  }
+
+  /* Sections */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-family: var(--display);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Form elements */
+  label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    padding: 10px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  input:focus {
+    border-color: var(--accent-dim);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .field { margin-bottom: 0; }
+
+  .hint {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+    line-height: 1.4;
+  }
+
+  .hint a { color: var(--accent-dim); text-decoration: none; }
+  .hint a:hover { color: var(--accent); }
+
+  /* CV Upload */
+  .cv-drop {
+    border: 2px dashed var(--border-bright);
+    border-radius: 6px;
+    padding: 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--card);
+    position: relative;
+  }
+
+  .cv-drop:hover, .cv-drop.drag-over {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+  }
+
+  .cv-drop input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+
+  .cv-icon { font-size: 2rem; margin-bottom: 8px; }
+  .cv-text { font-size: 0.82rem; color: var(--text-dim); }
+  .cv-text strong { color: var(--accent); }
+
+  .cv-success {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--accent-glow);
+    border: 1px solid var(--accent-dim);
+    border-radius: 4px;
+    margin-top: 12px;
+    font-size: 0.8rem;
+    color: var(--accent);
+  }
+
+  /* Profile checkboxes */
+  .profiles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .profile-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .profile-check:hover { border-color: var(--border-bright); }
+  .profile-check.active { border-color: var(--accent-dim); background: var(--accent-glow); }
+
+  .profile-check input { display: none; }
+
+  .check-box {
+    width: 16px; height: 16px;
+    border: 1px solid var(--border-bright);
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    font-size: 0.7rem;
+  }
+
+  .profile-check.active .check-box {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+  }
+
+  .profile-name { font-size: 0.8rem; font-weight: 500; line-height: 1.3; }
+
+  /* Search button */
+  .btn-search {
+    width: 100%;
+    padding: 16px;
+    background: var(--accent);
+    border: none;
+    border-radius: 6px;
+    color: var(--bg);
+    font-family: var(--display);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+
+  .btn-search:hover { background: #8ed960; transform: translateY(-1px); box-shadow: 0 4px 20px var(--accent-glow); }
+  .btn-search:active { transform: translateY(0); }
+  .btn-search:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* Loading */
+  .loading {
+    display: none;
+    text-align: center;
+    padding: 48px;
+    color: var(--text-dim);
+  }
+
+  .loading-bar {
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 16px auto;
+    max-width: 300px;
+  }
+
+  .loading-bar-inner {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    animation: loadbar 3s ease-in-out infinite;
+  }
+
+  @keyframes loadbar {
+    0% { width: 0%; margin-left: 0; }
+    50% { width: 70%; }
+    100% { width: 0%; margin-left: 100%; }
+  }
+
+  .loading-msg { font-size: 0.82rem; letter-spacing: 0.05em; }
+
+  /* Results */
+  #results-section { display: none; }
+
+  .results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: gap;
+    gap: 10px;
+  }
+
+  .results-count {
+    font-family: var(--display);
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .results-count span { color: var(--accent); }
+
+  .sort-controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .sort-btn {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    padding: 5px 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+  }
+
+  .sort-btn:hover, .sort-btn.active { border-color: var(--accent); color: var(--accent); }
+
+  /* Job cards */
+  .jobs-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .job-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    transition: all 0.2s;
+    animation: fadeUp 0.3s ease both;
+    position: relative;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .job-card:hover { border-color: var(--border-bright); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+
+  .job-card.linkedin { border-left: 3px solid #0077b5; }
+  .job-card.high-match { border-left: 3px solid var(--accent); }
+  .job-card.medium-match { border-left: 3px solid var(--warning); }
+  .job-card.low-match { border-left: 3px solid var(--text-muted); }
+
+  .job-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .job-title {
+    font-family: var(--display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+    line-height: 1.3;
+  }
+
+  .job-title:hover { color: var(--accent); }
+
+  .score-badge {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-family: var(--mono);
+  }
+
+  .score-high { background: rgba(126,200,80,0.2); color: var(--accent); border: 1px solid var(--accent-dim); }
+  .score-mid { background: rgba(232,184,74,0.15); color: var(--warning); border: 1px solid rgba(232,184,74,0.3); }
+  .score-low { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border); }
+
+  .job-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  .job-meta span { display: flex; align-items: center; gap: 4px; }
+
+  .job-profile-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-right: 6px;
+  }
+
+  .job-desc {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .job-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .relevance-reason {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    font-style: italic;
+    flex: 1;
+  }
+
+  .job-link {
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    border: 1px solid var(--accent-dim);
+    padding: 5px 14px;
+    border-radius: 4px;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .job-link:hover { background: var(--accent-glow); }
+
+  .source-tag {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+
+  .src-adzuna { background: rgba(74,122,200,0.15); color: #6aabff; border: 1px solid rgba(74,122,200,0.3); }
+  .src-linkedin { background: rgba(0,119,181,0.15); color: #60b0e0; border: 1px solid rgba(0,119,181,0.3); }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 64px 24px;
+    color: var(--text-muted);
+  }
+
+  .empty-state .big { font-size: 3rem; margin-bottom: 12px; }
+  .empty-state p { font-size: 0.82rem; }
+
+  /* Error */
+  .alert {
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    margin-top: 12px;
+    display: none;
+  }
+
+  .alert-error { background: rgba(232,92,74,0.1); border: 1px solid rgba(232,92,74,0.3); color: #ff8f80; }
+  .alert-info { background: var(--accent-glow); border: 1px solid var(--accent-dim); color: var(--accent); }
+
+  .cities-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  @media (max-width: 700px) { .cities-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .toggle-wrap { display:flex; align-items:center; }
+  .toggle-track {
+    width: 40px; height: 22px;
+    background: var(--border-bright);
+    border-radius: 11px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle-track.on { background: var(--accent-dim); }
+  .toggle-thumb {
+    width: 16px; height: 16px;
+    background: var(--text-muted);
+    border-radius: 50%;
+    position: absolute;
+    top: 3px; left: 3px;
+    transition: transform 0.2s, background 0.2s;
+  }
+  .toggle-track.on .toggle-thumb { transform: translateX(18px); background: var(--accent); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 0;
+    margin-top: 48px;
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+  }
+
+  @media (max-width: 600px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .profiles-grid { grid-template-columns: 1fr; }
+    .logo { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-inner">
+      <div class="logo-block">
+        <div class="logo">
+          <span class="logo-dot"></span>
+          JobHunter
+        </div>
+        <div class="tagline">Bonn area job aggregator · CV-matched · English-speaking roles</div>
+      </div>
+      <div class="location-badge" id="location-badge">📍 Bonn · 🇬🇧 English OK</div>
+    </div>
+  </header>
+
+  <!-- API Keys -->
+  <div class="section">
+    <div class="section-title">API Configuration</div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Adzuna App ID</label>
+        <input type="text" id="adzuna-id" placeholder="e.g. a1b2c3d4">
+        <div class="hint">Free at <a href="https://developer.adzuna.com" target="_blank">developer.adzuna.com</a> — ~250 req/month free</div>
+      </div>
+      <div class="field">
+        <label>Adzuna API Key</label>
+        <input type="password" id="adzuna-key" placeholder="your key here">
+        <div class="hint">Leave blank to only get LinkedIn deep-links</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;">
+      <label>Claude API Key (for CV scoring)</label>
+      <input type="password" id="claude-key" placeholder="sk-ant-...">
+      <div class="hint">Get one at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> · Only used locally, never sent to anyone else</div>
+    </div>
+    <div style="margin-top:16px; display:flex; align-items:center; gap:12px;">
+      <label style="margin:0; text-transform:none; font-size:0.82rem; color:var(--text); cursor:pointer; display:flex; align-items:center; gap:10px;" for="cv-scoring-toggle">
+        <div class="toggle-wrap">
+          <input type="checkbox" id="cv-scoring-toggle" checked style="display:none;">
+          <div class="toggle-track" onclick="toggleCVScoring()">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+        <span id="cv-scoring-label">CV scoring <strong style="color:var(--accent)">ON</strong></span>
+      </label>
+      <span style="font-size:0.7rem; color:var(--text-muted);">Turn off to skip AI scoring and get results faster</span>
+    </div>
+    <div id="api-alert" class="alert alert-info" style="display:none;margin-top:12px;"></div>
+  </div>
+
+  <!-- CV Upload -->
+  <div class="section">
+    <div class="section-title">Your CV</div>
+    <div class="cv-drop" id="cv-drop">
+      <input type="file" id="cv-file" accept=".pdf,.docx,.txt">
+      <div class="cv-icon">📄</div>
+      <div class="cv-text"><strong>Drop your CV here</strong> or click to browse<br>PDF, DOCX, or TXT · max 5MB</div>
+    </div>
+    <div class="cv-success" id="cv-success">
+      <span>✅</span>
+      <span id="cv-filename"></span>
+      <span style="color:var(--text-muted);margin-left:auto;font-size:0.7rem;" id="cv-preview-short"></span>
+    </div>
+    <div id="cv-alert" class="alert alert-error"></div>
+  </div>
+
+  <!-- City Selector -->
+  <div class="section">
+    <div class="section-title">Cities to Search</div>
+    <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
+      <button class="sort-btn active" onclick="selectAllCities(event, 'de')">🇩🇪 All Germany</button>
+      <button class="sort-btn" onclick="selectAllCities(event, 'us')">🇺🇸 All USA</button>
+      <button class="sort-btn" onclick="selectAllCities(event, 'all')">Select All</button>
+      <button class="sort-btn" onclick="selectAllCities(event, 'none')">Clear All</button>
+    </div>
+    <div class="cities-grid" id="cities-grid">
+      {% for c in cities %}
+      <label class="profile-check {% if c.id == 'bonn' %}active{% endif %}" data-id="{{ c.id }}" data-country="{{ c.adzuna_country }}">
+        <input type="checkbox" {% if c.id == 'bonn' %}checked{% endif %} value="{{ c.id }}">
+        <span class="check-box">{% if c.id == 'bonn' %}✓{% endif %}</span>
+        <span class="profile-name">{{ c.flag }} {{ c.label }}</span>
+      </label>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Job Profiles -->
+  <div class="section">
+    <div class="section-title">Job Types to Search</div>
+    <div class="profiles-grid" id="profiles-grid">
+      {% for p in profiles %}
+      <label class="profile-check active" data-id="{{ p.id }}">
+        <input type="checkbox" checked value="{{ p.id }}">
+        <span class="check-box">✓</span>
+        <span class="profile-name">{{ p.label }}</span>
+      </label>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Search Button -->
+  <button class="btn-search" id="search-btn" onclick="runSearch()">
+    ⚡ Search Jobs
+  </button>
+
+  <!-- Loading -->
+  <div class="loading" id="loading">
+    <div class="loading-msg" id="loading-msg">Searching job boards...</div>
+    <div class="loading-bar"><div class="loading-bar-inner"></div></div>
+    <div style="font-size:0.7rem;color:var(--text-muted);margin-top:8px;">This may take 20–40 seconds</div>
+  </div>
+
+  <!-- Results -->
+  <div id="results-section">
+    <div class="results-header">
+      <div class="results-count">Found <span id="result-count">0</span> jobs</div>
+      <div class="sort-controls">
+        <button class="sort-btn active" onclick="sortJobs('relevance')">↓ Relevance</button>
+        <button class="sort-btn" onclick="sortJobs('date')">↓ Date</button>
+        <button class="sort-btn" onclick="sortJobs('source')">Source</button>
+      </div>
+    </div>
+    <div class="jobs-list" id="jobs-list"></div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="container">
+    JobHunter · Searches Adzuna API + LinkedIn deep-links · Data never leaves your machine
+  </div>
+</footer>
+
+<script>
+let allJobs = [];
+
+let cvScoringOn = true;
+
+function toggleCVScoring() {
+  cvScoringOn = !cvScoringOn;
+  const track = document.querySelector('.toggle-track');
+  const label = document.getElementById('cv-scoring-label');
+  track.classList.toggle('on', cvScoringOn);
+  label.innerHTML = `CV scoring <strong style="color:${cvScoringOn ? 'var(--accent)' : 'var(--warning)'}">${cvScoringOn ? 'ON' : 'OFF'}</strong>`;
+}
+
+// initialise toggle as ON
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelector('.toggle-track').classList.add('on');
+});
+
+// City toggles (same logic as profiles)
+document.querySelectorAll('#cities-grid .profile-check').forEach(el => {
+  el.addEventListener('click', function() {
+    const cb = this.querySelector('input');
+    cb.checked = !cb.checked;
+    const box = this.querySelector('.check-box');
+    this.classList.toggle('active', cb.checked);
+    box.textContent = cb.checked ? '✓' : '';
+  });
+});
+
+function selectAllCities(e, group) {
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  document.querySelectorAll('#cities-grid .profile-check').forEach(el => {
+    const country = el.dataset.country;
+    const cb = el.querySelector('input');
+    const box = el.querySelector('.check-box');
+    let on = false;
+    if (group === 'all') on = true;
+    else if (group === 'none') on = false;
+    else if (group === 'de') on = country === 'de';
+    else if (group === 'us') on = country === 'us';
+    cb.checked = on;
+    el.classList.toggle('active', on);
+    box.textContent = on ? '✓' : '';
+  });
+}
+
+function updateLocationBadge() {
+  const active = [...document.querySelectorAll('#cities-grid .profile-check.active')]
+    .map(el => el.querySelector('.profile-name').textContent.trim());
+  const badge = document.getElementById('location-badge');
+  if (active.length === 0) badge.textContent = '📍 No city selected';
+  else if (active.length <= 2) badge.textContent = '📍 ' + active.join(', ');
+  else badge.textContent = `📍 ${active.length} cities selected`;
+}
+
+// hook badge update into city clicks
+document.querySelectorAll('#cities-grid .profile-check').forEach(el => {
+  el.addEventListener('click', () => setTimeout(updateLocationBadge, 10));
+});
+
+// CV Upload
+const cvDrop = document.getElementById('cv-drop');
+const cvFile = document.getElementById('cv-file');
+
+cvDrop.addEventListener('dragover', e => { e.preventDefault(); cvDrop.classList.add('drag-over'); });
+cvDrop.addEventListener('dragleave', () => cvDrop.classList.remove('drag-over'));
+cvDrop.addEventListener('drop', e => {
+  e.preventDefault();
+  cvDrop.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) uploadCV(e.dataTransfer.files[0]);
+});
+cvFile.addEventListener('change', () => { if (cvFile.files[0]) uploadCV(cvFile.files[0]); });
+
+async function uploadCV(file) {
+  const fd = new FormData();
+  fd.append('cv', file);
+  const alert = document.getElementById('cv-alert');
+  alert.style.display = 'none';
+  try {
+    const resp = await fetch('/upload_cv', { method: 'POST', body: fd });
+    const data = await resp.json();
+    if (data.success) {
+      document.getElementById('cv-success').style.display = 'flex';
+      document.getElementById('cv-filename').textContent = data.filename;
+      document.getElementById('cv-preview-short').textContent = data.preview.substring(0, 80) + '…';
+    } else {
+      alert.textContent = data.error;
+      alert.style.display = 'block';
+    }
+  } catch (e) {
+    alert.textContent = 'Upload failed: ' + e.message;
+    alert.style.display = 'block';
+  }
+}
+
+// Profile toggles
+document.querySelectorAll('#profiles-grid .profile-check').forEach(el => {
+  el.addEventListener('click', function() {
+    const cb = this.querySelector('input');
+    cb.checked = !cb.checked;
+    this.classList.toggle('active', cb.checked);
+  });
+});
+
+// Search
+async function runSearch() {
+  const adzunaId = document.getElementById('adzuna-id').value.trim();
+  const adzunaKey = document.getElementById('adzuna-key').value.trim();
+  const claudeKey = document.getElementById('claude-key').value.trim();
+
+  const selectedCities = [...document.querySelectorAll('#cities-grid .profile-check.active')]
+    .map(el => el.dataset.id);
+
+  if (selectedCities.length === 0) {
+    alert('Please select at least one city.');
+    return;
+  }
+
+  const selectedProfiles = [...document.querySelectorAll('#profiles-grid .profile-check.active')]
+    .map(el => el.dataset.id);
+
+  if (selectedProfiles.length === 0) {
+    alert('Please select at least one job type.');
+    return;
+  }
+
+  // UI state
+  document.getElementById('search-btn').disabled = true;
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('results-section').style.display = 'none';
+  document.getElementById('jobs-list').innerHTML = '';
+
+  const msgs = [
+    'Connecting to job boards...',
+    'Searching Adzuna in Bonn area...',
+    'Filtering German-required roles...',
+    claudeKey ? 'Scoring jobs against your CV...' : 'Almost done...',
+  ];
+  let mi = 0;
+  const msgEl = document.getElementById('loading-msg');
+  const msgInterval = setInterval(() => {
+    mi = (mi + 1) % msgs.length;
+    msgEl.textContent = msgs[mi];
+  }, 2500);
+
+  try {
+    const resp = await fetch('/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        adzuna_id: adzunaId,
+        adzuna_key: adzunaKey,
+        claude_key: claudeKey,
+        use_cv_scoring: cvScoringOn,
+        profiles: selectedProfiles,
+        cities: selectedCities,
+      })
+    });
+    const data = await resp.json();
+    allJobs = data.jobs || [];
+    renderJobs(allJobs);
+
+    const apiAlert = document.getElementById('api-alert');
+    if (!adzunaId) {
+      apiAlert.textContent = '💡 No Adzuna key — showing LinkedIn deep-links only. Add your free Adzuna key to get real job listings.';
+      apiAlert.style.display = 'block';
+    } else {
+      apiAlert.style.display = 'none';
+    }
+  } catch (e) {
+    document.getElementById('jobs-list').innerHTML = `<div class="empty-state"><div class="big">⚠️</div><p>Search failed: ${e.message}</p></div>`;
+    document.getElementById('results-section').style.display = 'block';
+  } finally {
+    clearInterval(msgInterval);
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('search-btn').disabled = false;
+  }
+}
+
+function renderJobs(jobs) {
+  const list = document.getElementById('jobs-list');
+  document.getElementById('result-count').textContent = jobs.length;
+  document.getElementById('results-section').style.display = 'block';
+
+  if (jobs.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="big">🔍</div><p>No jobs found. Try adding your Adzuna API key or selecting more job types.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = jobs.map((j, i) => {
+    const score = j.relevance_score;
+    const scoreClass = score >= 70 ? 'score-high' : score >= 45 ? 'score-mid' : 'score-low';
+    const cardClass = j.source === 'LinkedIn' ? 'linkedin' : score >= 70 ? 'high-match' : score >= 45 ? 'medium-match' : 'low-match';
+    const scoreBadge = score !== null && score !== undefined
+      ? `<span class="score-badge ${scoreClass}">${score}% match</span>`
+      : '';
+    const sourceClass = j.source === 'LinkedIn' ? 'src-linkedin' : 'src-adzuna';
+    const salary = j.salary_min ? `💰 €${Math.round(j.salary_min/1000)}k${j.salary_max ? '–'+Math.round(j.salary_max/1000)+'k' : '+'}` : '';
+
+    return `
+    <div class="job-card ${cardClass}" style="animation-delay:${i*0.04}s">
+      <div class="job-top">
+        <a href="${j.url}" target="_blank" class="job-title">${j.title}</a>
+        ${scoreBadge}
+      </div>
+      <div class="job-meta">
+        <span>🏢 ${j.company}</span>
+        <span>📍 ${j.location}</span>
+        ${salary ? `<span>${salary}</span>` : ''}
+        ${j.created ? `<span>📅 ${j.created.split('T')[0]}</span>` : ''}
+        <span class="source-tag ${sourceClass}">${j.source}</span>
+      </div>
+      <span class="job-profile-tag">${j.profile_label}</span>
+      <div class="job-desc">${j.description || 'No description available.'}</div>
+      <div class="job-footer">
+        <div class="relevance-reason">${j.relevance_reason || ''}</div>
+        <a href="${j.url}" target="_blank" class="job-link">${j.source === 'LinkedIn' ? 'Open LinkedIn →' : 'View Job →'}</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function sortJobs(by) {
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  let sorted = [...allJobs];
+  if (by === 'relevance') {
+    sorted.sort((a, b) => {
+      if (a.source === 'LinkedIn' && b.source !== 'LinkedIn') return 1;
+      if (b.source === 'LinkedIn' && a.source !== 'LinkedIn') return -1;
+      return (b.relevance_score || 0) - (a.relevance_score || 0);
+    });
+  } else if (by === 'date') {
+    sorted.sort((a, b) => (b.created || '').localeCompare(a.created || ''));
+  } else if (by === 'source') {
+    sorted.sort((a, b) => a.source.localeCompare(b.source));
+  }
+  renderJobs(sorted);
+}
+</script>
+</body>
+</html>
